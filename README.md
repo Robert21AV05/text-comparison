@@ -22,4 +22,4 @@ To build Docker image
 docker build --tag file-comparison .
 docker run -p 5001:5000 file-comparison
 
-Go to 0.0.0.0:5000/ and enter files to be compared.
+Go to 0.0.0.0:5001/ and enter files to be compared.
