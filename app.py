@@ -72,4 +72,4 @@ def compare(file1name,file2name):
 """    %(file2.name, onlyFile2, file1.name, onlyFile1)
 
 if __name__=='__main__':
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True)
