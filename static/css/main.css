@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    margin-left: 0.5%;
+    font-family: monospace;
+    color: rgb(51, 22, 5);
+    background-color: rgb(116, 111, 111);
+}
+
+.mybutton {
+    width: auto;
+    height: auto;
+    border: none;
+    color: rgb(4, 4, 10);
+    margin-left: 0;
+}
+
+.myupload {
+    color: darkolivegreen;
+}
+
+.myoutput {
+    color: darkviolet;
+}
