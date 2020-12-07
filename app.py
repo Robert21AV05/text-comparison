@@ -1,75 +1,72 @@
-from flask import Flask, render_template, request, url_for
-from werkzeug.utils import redirect, secure_filename
 import os
+from flask import Flask, render_template, url_for
+from flask.globals import request
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
 
 @app.route('/')
-def home():
-    return render_template('index.html')
+def index():
+	return render_template('index.html')
+
 
 @app.route('/', methods=['POST'])
-def upload_file():
-    file1 = request.files['file1']
-    if (file1.filename != ''):
-        file1.save(secure_filename(file1.filename))
-    else:
-        raise Exception ("You did not give enough files to compare!" )
+def compare():
 
-    file2 = request.files['file2']
-    if (file2.filename != ''):
-        file2.save(secure_filename(file2.filename))
-    else:
-        raise Exception ("You did not give enough files to compare!" )
+	if request.method == 'POST':
 
-    
-    return compare(file1.filename,file2.filename)
+		file1 = request.files['file1']
+		if (file1.filename != ''):
+			file1.save(secure_filename(file1.filename))
+		else:
+			raise Exception ("You did not give enough files to compare!" )    
+		
+		file2 = request.files['file2']
+		if (file2.filename != ''):
+			file2.save(secure_filename(file2.filename))
+		else:
+			raise Exception ("You did not give enough files to compare!" )   
 
-def compare(file1name,file2name):
-    file1 = open(file1name, "r")
-    file2 = open(file2name, "r")
+		file1opened = open(file1.filename, "r")
+		file2opened = open(file2.filename, "r")
 
-    packs1 = file1.read().split()
-    packs2 = file2.read().split()
+		nameOfFile1 = file1.filename
+		nameOfFile2 = file2.filename
 
-    onlyFile1 = []
-    onlyFile2 = []
+		packs1 = file1opened.read().split()
+		packs2 = file2opened.read().split()
 
-    for package in packs1:
-        if (package in packs2):
-            packs1.remove(package)
-            packs2.remove(package)
-        else:
-            onlyFile1.append(package)   
-            #print(package, " exists only in ", file1.name)
-                
-    print("----------------------------------------------")
-    for package in packs2:
-        if (not(package in packs1)):
-               
-            #print(package, " exists only in ", file2.name)
-            onlyFile2.append(package)
-               
-    print("----------------------------------------------")
-    file1.close()
-    file2.close()
-    
-    os.remove(file1name)
-    os.remove(file2name)
-    
-    return """
-<!DOCTYPE html>
-<head>
-   <title>Result</title>
-</head>
-    <h1>Comparison Result</h1>
-    <p>only in %s --> %s</p>
-    
-    <p>only in %s --> %s</p>
-    
-</body>
-"""    %(file2.name, onlyFile2, file1.name, onlyFile1)
+		onlyFile1 = []
+		onlyFile2 = []
+		common = []
 
-if __name__=='__main__':
-    app.run(debug=True,host='0.0.0.0')
+		for package in packs1:
+			if (package in packs2):
+				common.append(package)		
+				packs1.remove(package)
+				packs2.remove(package)
+			else:
+				onlyFile1.append(package)
+
+		for package in packs2:
+			if (package in packs1):
+				common.append(package)
+				packs1.remove(package)
+				packs2.remove(package)
+			else:
+				onlyFile2.append(package)
+
+		file1opened.close()
+		file2opened.close()
+
+		os.remove(file1.filename)
+		os.remove(file2.filename)
+		
+		print(onlyFile1)
+		print(onlyFile2)
+
+		return render_template('index.html', onlyFile1=onlyFile1, onlyFile2=onlyFile2, nameOfFile1=nameOfFile1, nameOfFile2=nameOfFile2, common=common)
+
+if __name__ == "__main__":
+	app.run(debug=True, host='0.0.0.0')
